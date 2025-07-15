@@ -10,6 +10,16 @@ use App\Http\Controllers\Api\AssessmentController;
 use App\Http\Controllers\Api\CommunityController;
 use App\Http\Controllers\Api\AchievementController;
 
+// Health check endpoint
+Route::get('/health', function () {
+    return response()->json([
+        'status' => 'healthy',
+        'timestamp' => now()->toISOString(),
+        'service' => 'LMS Backend API',
+        'version' => '1.0.0'
+    ]);
+});
+
 // API Welcome route
 Route::get('/', function () {
     return response()->json([
