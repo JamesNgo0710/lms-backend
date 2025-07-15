@@ -52,7 +52,6 @@
         "post-install-cmd": [
             "@php artisan migrate --force",
             "@php artisan db:seed --force --class=RolePermissionSeeder",
-            "@php artisan db:seed --force --class=TopicSeeder",
             "@php artisan db:seed --force --class=AchievementSeeder",
             "@php artisan optimize:clear"
         ],
