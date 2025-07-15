@@ -10,23 +10,55 @@ use Illuminate\Http\Request;
 
 class AssessmentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $assessments = Assessment::with(['topic', 'questions', 'attempts'])->get();
+        $user = $request->user();
+        
+        $query = Assessment::with(['topic', 'questions', 'attempts']);
+        
+        // Filter for students - only show assessments from published topics
+        if ($user->hasRole('student')) {
+            $query->whereHas('topic', function ($q) {
+                $q->where('status', 'Published');
+            });
+        }
+        
+        $assessments = $query->get();
         return response()->json($assessments);
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $assessment = Assessment::with(['topic', 'questions', 'attempts'])->findOrFail($id);
+        $user = $request->user();
+        
+        $query = Assessment::with(['topic', 'questions', 'attempts']);
+        
+        // Filter for students - only show assessments from published topics
+        if ($user->hasRole('student')) {
+            $query->whereHas('topic', function ($q) {
+                $q->where('status', 'Published');
+            });
+        }
+        
+        $assessment = $query->findOrFail($id);
         return response()->json($assessment);
     }
 
-    public function getByTopic($topicId)
+    public function getByTopic(Request $request, $topicId)
     {
-        $assessment = Assessment::with(['questions', 'attempts'])
-            ->where('topic_id', $topicId)
-            ->first();
+        $user = $request->user();
+        
+        $query = Assessment::with(['questions', 'attempts'])
+            ->where('topic_id', $topicId);
+        
+        // Filter for students - only show assessments from published topics
+        if ($user->hasRole('student')) {
+            $query->whereHas('topic', function ($q) {
+                $q->where('status', 'Published');
+            });
+        }
+        
+        $assessment = $query->first();
 
         if (!$assessment) {
             return response()->json(['message' => 'No assessment found for this topic'], 404);

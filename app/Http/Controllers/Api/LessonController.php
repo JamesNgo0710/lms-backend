@@ -10,24 +10,59 @@ use Illuminate\Http\Request;
 
 class LessonController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $lessons = Lesson::with(['topic', 'completions', 'views'])->get();
+        $user = $request->user();
+        
+        $query = Lesson::with(['topic', 'completions', 'views']);
+        
+        // Filter for students - only show published lessons from published topics
+        if ($user->hasRole('student')) {
+            $query->where('status', 'Published')
+                  ->whereHas('topic', function ($q) {
+                      $q->where('status', 'Published');
+                  });
+        }
+        
+        $lessons = $query->get();
         return response()->json($lessons);
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $lesson = Lesson::with(['topic', 'completions', 'views'])->findOrFail($id);
+        $user = $request->user();
+        
+        $query = Lesson::with(['topic', 'completions', 'views']);
+        
+        // Filter for students - only show published lessons from published topics
+        if ($user->hasRole('student')) {
+            $query->where('status', 'Published')
+                  ->whereHas('topic', function ($q) {
+                      $q->where('status', 'Published');
+                  });
+        }
+        
+        $lesson = $query->findOrFail($id);
         return response()->json($lesson);
     }
 
-    public function getByTopic($topicId)
+    public function getByTopic(Request $request, $topicId)
     {
-        $lessons = Lesson::where('topic_id', $topicId)
+        $user = $request->user();
+        
+        $query = Lesson::where('topic_id', $topicId)
             ->with(['completions', 'views'])
-            ->orderBy('order')
-            ->get();
+            ->orderBy('order');
+        
+        // Filter for students - only show published lessons from published topics
+        if ($user->hasRole('student')) {
+            $query->where('status', 'Published')
+                  ->whereHas('topic', function ($q) {
+                      $q->where('status', 'Published');
+                  });
+        }
+        
+        $lessons = $query->get();
 
         // Add completion status for current user if authenticated
         if (auth()->check()) {

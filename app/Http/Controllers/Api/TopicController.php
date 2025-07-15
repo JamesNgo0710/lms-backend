@@ -8,11 +8,20 @@ use Illuminate\Http\Request;
 
 class TopicController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $topics = Topic::with(['lessons', 'assessments'])
-            ->withCount(['lessons', 'lessonViews', 'lessonCompletions'])
-            ->get()
+        $user = $request->user();
+        
+        $query = Topic::with(['lessons', 'assessments'])
+            ->withCount(['lessons', 'lessonViews', 'lessonCompletions']);
+        
+        // Filter by status for students - only show published topics
+        if ($user->hasRole('student')) {
+            $query->where('status', 'Published');
+        }
+        // Admin and teachers can see all topics
+        
+        $topics = $query->get()
             ->map(function ($topic) {
                 // Calculate actual student count from views
                 $topic->students = $topic->lessonViews()->distinct('user_id')->count();
@@ -23,11 +32,19 @@ class TopicController extends Controller
         return response()->json($topics);
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $topic = Topic::with(['lessons', 'assessments'])
-            ->withCount(['lessons', 'lessonViews', 'lessonCompletions'])
-            ->findOrFail($id);
+        $user = $request->user();
+        
+        $query = Topic::with(['lessons', 'assessments'])
+            ->withCount(['lessons', 'lessonViews', 'lessonCompletions']);
+        
+        // Filter by status for students - only show published topics
+        if ($user->hasRole('student')) {
+            $query->where('status', 'Published');
+        }
+        
+        $topic = $query->findOrFail($id);
 
         // Calculate actual student count
         $topic->students = $topic->lessonViews()->distinct('user_id')->count();
