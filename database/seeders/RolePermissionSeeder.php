@@ -88,20 +88,31 @@ class RolePermissionSeeder extends Seeder
         $admin = User::firstOrCreate(
             ['email' => 'admin@lms.com'],
             [
-                'name' => 'Admin User',
+                'first_name' => 'Admin',
+                'last_name' => 'User',
                 'password' => Hash::make('admin123'),
-                'role' => 'admin',
             ]
         );
         $admin->assignRole('admin');
+
+        // Create teacher user
+        $teacher = User::firstOrCreate(
+            ['email' => 'teacher@lms.com'],
+            [
+                'first_name' => 'Teacher',
+                'last_name' => 'User',
+                'password' => Hash::make('teacher123'),
+            ]
+        );
+        $teacher->assignRole('teacher');
 
         // Create first student user
         $student1 = User::firstOrCreate(
             ['email' => 'student@lms.com'],
             [
-                'name' => 'John Student',
+                'first_name' => 'John',
+                'last_name' => 'Student',
                 'password' => Hash::make('student123'),
-                'role' => 'student',
             ]
         );
         $student1->assignRole('student');
@@ -110,9 +121,9 @@ class RolePermissionSeeder extends Seeder
         $student2 = User::firstOrCreate(
             ['email' => 'jimmy@lms.com'],
             [
-                'name' => 'NFT Jimmy',
+                'first_name' => 'NFT',
+                'last_name' => 'Jimmy',
                 'password' => Hash::make('jimmy123'),
-                'role' => 'student',
             ]
         );
         $student2->assignRole('student');
