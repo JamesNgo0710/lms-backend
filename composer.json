@@ -51,8 +51,8 @@
         ],
         "post-install-cmd": [
             "@php artisan migrate --force",
-            "@php artisan db:seed --force --class=Database\\Seeders\\RolePermissionSeeder",
-            "@php artisan db:seed --force --class=Database\\Seeders\\AchievementSeeder",
+            "@php artisan db:seed --force --class=RolePermissionSeeder",
+            "@php artisan db:seed --force --class=AchievementSeeder",
             "@php artisan optimize:clear"
         ],
         "dev": [
