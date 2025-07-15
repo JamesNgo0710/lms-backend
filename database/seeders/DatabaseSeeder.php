@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         // Call the specialized seeders in order
         $this->call([
             RolePermissionSeeder::class,
+            TopicSeeder::class,
             AchievementSeeder::class,
         ]);
     }
