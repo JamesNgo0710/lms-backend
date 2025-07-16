@@ -29,6 +29,7 @@ return [
         'https://lms-system-lu6z.vercel.app',
         'https://lms-system-dep.vercel.app',
         'https://lms-system-xkit.vercel.app',
+        'https://lms-system-lac.vercel.app',
     ],
 
     'allowed_origins_patterns' => [
